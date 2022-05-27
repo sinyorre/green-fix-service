@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 public class MainController {
 
-    final String FILTER = "!.KWpexRBiM3k9UbAQ0V11.aQM9odT";
+    final String FILTER = "!.KWpexRBiM3k9UbAQ0V12uAD*y2.H";
 
     @Autowired
     RestTemplate restTemplate;

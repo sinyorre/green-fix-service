@@ -52,7 +52,7 @@ public class MainController {
         int page = 1;
         int maxPage = 2;
         List<QuestionEntity> questionEntityList = new ArrayList<>();
-        List<String> tags = new ArrayList<>(){{
+        List<String> tags = new ArrayList<String>(){{
             add("java");
             add("spring-boot");
             add("nodejs");

@@ -1,6 +1,9 @@
 package com.pluvio.codecrafters.controller;
 
+import com.pluvio.codecrafters.model.Answer;
 import com.pluvio.codecrafters.model.ResponseItem;
+import com.pluvio.codecrafters.model.dto.ResponseQuestions;
+import com.pluvio.codecrafters.model.entity.AnswerEntity;
 import com.pluvio.codecrafters.model.entity.QuestionEntity;
 import com.pluvio.codecrafters.model.repository.ItemRepository;
 import org.modelmapper.ModelMapper;
@@ -20,6 +23,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by salagoz on May, 2022
@@ -39,12 +43,12 @@ public class MainController {
     ModelMapper modelMapper;
 
     @GetMapping("/")
-    private String example(){
+    private String hello() {
         return "hello";
     }
 
-    @GetMapping
-    private String hello(
+    @GetMapping("/parse")
+    private String parse(
             @RequestParam Integer fromdate,
             @RequestParam Integer todate,
             @RequestParam String tagged
@@ -52,9 +56,7 @@ public class MainController {
         int page = 1;
         int maxPage = 2;
         List<QuestionEntity> questionEntityList = new ArrayList<>();
-        List<String> tags = new ArrayList<String>(){{
-            add("java");
-            add("spring-boot");
+        List<String> tags = new ArrayList<String>() {{
             add("nodejs");
         }};
 
@@ -81,7 +83,15 @@ public class MainController {
                     // new Date(1653059311 * 1000).toUTCString() JS
                     if (question.getAccepted_answer_id() > 0 && question.getView_count() > 1) {
                         QuestionEntity questionEntity = modelMapper.map(question, QuestionEntity.class);
-                        questionEntity.setId(questionId);
+                        List<AnswerEntity> answersQuestionEntity = questionEntity.getAnswers();
+                        List<Answer> answers = question.getAnswers();
+                        for (int i = 0; i < answers.size(); i++) {
+                            Answer answer = answers.get(i);
+                            String link = answer.getOwner().getLink();
+                            String name = answer.getOwner().getDisplay_name();
+                            answersQuestionEntity.get(i).setOwnerLink(link);
+                            answersQuestionEntity.get(i).setOwnerName(name);
+                        }
                         questionEntityList.add(questionEntity);
                     }
                 });
@@ -95,12 +105,29 @@ public class MainController {
         return "Hello";
     }
 
-    @GetMapping("/get")
-    private List<QuestionEntity> getItem() {
-        Pageable paging = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+    @GetMapping("/questions")
+    private ResponseEntity<ResponseQuestions> getQuestions(@RequestParam Integer page) {
+        Pageable paging = PageRequest.of(--page, 10, Sort.by("createdAt").descending());
 
         Page<QuestionEntity> pagedResult = itemRepository.findAll(paging);
-        return pagedResult.getContent();
+        long totalElements = pagedResult.getTotalElements();
+        int totalPages = pagedResult.getTotalPages();
+        return new ResponseEntity<>(
+                ResponseQuestions.builder()
+                        .totalPages(totalPages)
+                        .totalElements(totalElements)
+                        .questions(pagedResult.getContent())
+                        .build(),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/questions/{questionId}")
+    private ResponseEntity<QuestionEntity> getQuestionById(@PathVariable Long questionId) {
+        Optional<QuestionEntity> questionEntityOptional = itemRepository.findById(questionId);
+        if (questionEntityOptional.isPresent())
+            return new ResponseEntity<>(questionEntityOptional.get(), HttpStatus.OK);
+        throw new RuntimeException("question not found");
     }
 
     @GetMapping("/category/{category}")

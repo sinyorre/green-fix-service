@@ -15,6 +15,7 @@ public class Question {
     private long close_vote_count;
     private boolean is_answered;
     private long view_count;
+    private long favorite_count;
     private long down_vote_count;
     private long up_vote_count;
     private long accepted_answer_id;

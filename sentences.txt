@@ -7,3 +7,9 @@ When designing a new class or revising existing ones, try to describe what the c
 When you instantiate an object with new() keyword, you should also consider other approaches: delegate object instantiation to DI-container, implement a factory, retrieving the pre-created object from the object pool etc. new() is a glue that create tight coupling between classes.
 
 When extending the behavior of an existing object by changing its code, consider whether you are violating the Open-Closed principle. Consider keeping the behavior you want to add separate from the existing object by implementing the decorator pattern, extension methods, or aspect-oriented programming techniques.
+
+Make sure the class you implement doesn’t depend on low-level abstractions. For example, some IOrderService that is responsible for implementing business use cases should not depend on ISmtpServer directly. There should be at least one more IMailService abstraction between IOrderService and ISmtpServer
+
+In 238 B.C. the Carthaginian mercenaries revolted, and the Romans took advantage of the fact to demand that the island should be given period.
+
+Design patterns are high-level answers to problems that we as software engineers encounter frequently. It’s akin to explaining how to approach these issues and come up with a solution.

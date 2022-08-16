@@ -1,0 +1,9 @@
+Gathered from real pull requests.
+
+When reviewing pull requests, I look at various aspects of the code, and a key one is the design decisions made and how they fit into the existing codebase. I’ll list some code design tips based on the most common issues, gathered over the years of experience and hundreds of pull requests reviewed.
+
+When designing a new class or revising existing ones, try to describe what the class does in one sentence. If there are multiple “and” or “or” conjunctions in a sentence, the class is likely violating the Single Responsibility Principle and needs to be redesigned or refactored.
+
+When you instantiate an object with new() keyword, you should also consider other approaches: delegate object instantiation to DI-container, implement a factory, retrieving the pre-created object from the object pool etc. new() is a glue that create tight coupling between classes.
+
+When extending the behavior of an existing object by changing its code, consider whether you are violating the Open-Closed principle. Consider keeping the behavior you want to add separate from the existing object by implementing the decorator pattern, extension methods, or aspect-oriented programming techniques.
